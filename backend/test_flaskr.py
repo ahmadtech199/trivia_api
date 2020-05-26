@@ -79,7 +79,8 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().delete(f"/questions/{question_id}")
         data = json.loads(res.data)
 
-        question = Question.query.filter(Question.id == question.id).one_or_none()
+        question = Question.query.filter(
+            Question.id == question.id).one_or_none()
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data["success"], True)

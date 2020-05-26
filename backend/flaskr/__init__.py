@@ -71,7 +71,8 @@ def create_app(test_config=None):
 
     @app.route("/questions/<int:question_id>")
     def get_specific_question(question_id):
-        question = Question.query.filter(Question.id == question_id).one_or_none()
+        question = Question.query.filter(
+            Question.id == question_id).one_or_none()
         if question is None:
             return abort(404)
         return jsonify({"success": True, "question": question.format()})
@@ -111,7 +112,7 @@ def create_app(test_config=None):
             )
             question.insert()
 
-            return jsonify({"success": True, "created": question.id,})
+            return jsonify({"success": True, "created": question.id, })
 
         except:
             abort(422)
@@ -138,7 +139,9 @@ def create_app(test_config=None):
 
     @app.route("/categories/<int:category_id>/questions", methods=["GET"])
     def retrieve_questions_by_category(category_id):
-
+        category = Category.query.filter_by(id=category_id).one_or_none()
+        if (category is None):
+            abort(422)
         try:
             questions = Question.query.filter(
                 Question.category == str(category_id)
@@ -194,15 +197,25 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(error):
         return (
-            jsonify({"success": False, "error": 404, "message": "resource not found"}),
+            jsonify({"success": False, "error": 404,
+                     "message": "resource not found"}),
             404,
         )
 
     @app.errorhandler(422)
     def unprocessable(error):
         return (
-            jsonify({"success": False, "error": 422, "message": "unprocessable"}),
+            jsonify({"success": False, "error": 422,
+                     "message": "unprocessable"}),
             422,
+        )
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return (
+            jsonify({{"success": False, "error": 400,
+                      "message": "Bad request error"}}),
+            400,
         )
 
     return app
